@@ -11,8 +11,13 @@ Special thanks to [@Lerni](https://github.com/Lerni) and the [instagram-basic-di
 composer require xddesigners/silverstripe-instagram-feed
 ```
 
-## Requirements
-* Silverstripe 5.x
+```bash
+# Silverstripe 4.x
+composer require xddesigners/silverstripe-instagram-feed:dev-ss4
+
+# Silverstripe 5.x
+composer require xddesigners/silverstripe-instagram-feed
+```
 
 ## Usage
 
