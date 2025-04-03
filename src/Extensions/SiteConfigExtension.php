@@ -3,11 +3,11 @@
 namespace XD\InstagramFeed\Extensions;
 
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataExtension;
 use SilverStripe\SiteConfig\SiteConfig;
 use XD\InstagramFeed\Clients\InstagramClient;
 use XD\InstagramFeed\Models\InstagramAuthObject;
@@ -17,7 +17,7 @@ use XD\InstagramFeed\Models\InstagramAuthObject;
  * @package XD\InstagramFeed\Extensions
  * @property SiteConfig|SiteConfigExtension $owner
  */
-class SiteConfigExtension extends Extension
+class SiteConfigExtension extends DataExtension
 {
 
     private static $instagram_tab = 'Root.Instagram';
@@ -34,6 +34,7 @@ class SiteConfigExtension extends Extension
 
     public function updateCMSFields(FieldList $fields)
     {
+        parent::updateCMSFields($fields);
         $tab = Config::inst()->get(__CLASS__, 'instagram_tab');
         $fields->addFieldsToTab($tab, [
             TextField::create('InstagramAppID', _t(__CLASS__ . '.InstagramAppID', 'Instagram App ID')),
@@ -46,12 +47,6 @@ class SiteConfigExtension extends Extension
             _t(self::class . '.InstagramAuthObjects', 'InstagramAuthObjects'),
             InstagramAuthObject::get(), $config);
         $fields->addFieldToTab($tab, $gridField);
-
-        if ($this->owner->InstagramAppID && $this->owner->InstagramAppSecret && $this->owner->InstagramVerificationToken) {
-            $client = new InstagramClient();
-            $media = $client->getMediaList();
-        }
-
     }
 
     public function generateVerificationToken()
@@ -61,6 +56,7 @@ class SiteConfigExtension extends Extension
 
     public function onBeforeWrite()
     {
+        parent::onBeforeWrite();
         if ($this->owner->isChanged('InstagramAppID') || $this->owner->isChanged('InstagramAppSecret')) {
             $this->owner->InstagramVerificationToken = $this->generateVerificationToken();
         }

@@ -132,6 +132,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
 
     public function getUserProfile()
     {
+        return []; // why loop?
         $data = $this->getCachedUserMedia();
         return ArrayData::create($data['Profile'] ?: []);
     }
