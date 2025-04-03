@@ -46,12 +46,6 @@ class SiteConfigExtension extends Extension
             _t(self::class . '.InstagramAuthObjects', 'InstagramAuthObjects'),
             InstagramAuthObject::get(), $config);
         $fields->addFieldToTab($tab, $gridField);
-
-        if ($this->owner->InstagramAppID && $this->owner->InstagramAppSecret && $this->owner->InstagramVerificationToken) {
-            $client = new InstagramClient();
-            $media = $client->getMediaList();
-        }
-
     }
 
     public function generateVerificationToken()
