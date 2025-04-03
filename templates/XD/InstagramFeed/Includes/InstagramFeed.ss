@@ -1,0 +1,1 @@
+<% include XD\InstagramFeed\Includes\InstagramFeed_grid %>
