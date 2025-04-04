@@ -27,7 +27,11 @@ class InstagramAuthController extends Controller
             }
         }
 
-        $authObj = $instagram->storeInstagramAuthObject($request->getVar('code'));
+        // use oauth short lived token from code
+        $token = $instagram->getOAuthToken($request->getVar('code'));
+
+        // retrieve long lived token and store it
+        $authObj = $instagram->storeInstagramAuthObject($token);
         if ($authObj) {
             return ['Content' => DBHTMLText::create()->setValue(_t(self::class . '.TokenCreated', 'received token!'))];
         }

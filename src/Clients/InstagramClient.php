@@ -43,7 +43,11 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
     {
         $longLivedToken = $this->getLongLivedToken();
         if ($longLivedToken) {
-            $authObj = InstagramAuthObject::create();
+            // replace existing token with new one
+            $authObj = InstagramAuthObject::get()->first();
+            if(!$authObj) {
+                $authObj = InstagramAuthObject::create();
+            }
             $authObj->LongLivedToken = $longLivedToken->access_token;
             $authObj->user_id = $token->user_id;
             $authObj->write();

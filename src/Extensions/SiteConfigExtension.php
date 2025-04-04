@@ -6,6 +6,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -41,6 +42,14 @@ class SiteConfigExtension extends DataExtension
             TextField::create('InstagramAppSecret', _t(__CLASS__ . '.InstagramAppSecret', 'Instagram App Secret')),
             TextField::create('InstagramVerificationToken', _t(__CLASS__ . '.InstagramVerificationToken', 'Instagram Verification Token'))->setDisabled(true),
         ]);
+
+        // add button to generate verification token
+        $client = new InstagramClient();
+        $tokenUrl = $client->getLoginUrl();
+
+        $buttonField = LiteralField::create('InstagramAuthButton',
+            '<a href="' . $tokenUrl . '" class="btn btn-primary font-icon-external-link mb-4" target="_blank">' . _t(__CLASS__ . '.InstagramAuthButton', 'Authenticate with Instagram') . '</a>');
+        $fields->addFieldToTab($tab, $buttonField);
 
         $config = GridFieldConfig_RecordEditor::create();
         $gridField = GridField::create('InstagramAuthObjects',
