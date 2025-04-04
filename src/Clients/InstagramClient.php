@@ -30,13 +30,18 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
         ];
 
         // auto set access token if it exists
-        $token = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
-        if ($token) {
-            $this->setAccessToken($token->LongLivedToken);
+        $authObj = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
+        if ($authObj) {
+            // check if token needs to be refreshed, refresh after 30 days with TimeDiffIn
+            $days = $authObj->dbObject('LastEdited')->TimeDiffIn('days');
+            if ($days > 30) {
+                $longLivedToken = $this->refreshLongLivedToken();
+                $authObj->LongLivedToken = $longLivedToken->access_token;
+                $authObj->write();
+            }
+            $this->setAccessToken($authObj->LongLivedToken);
         }
-
         parent::__construct($config);
-
     }
 
     public function storeInstagramAuthObject($token)
@@ -109,7 +114,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
                 foreach ($mediaItem as $key => $value) {
                     if (is_string($key) && is_string($value)) {
                         $itemArray[$key] = $value;
-                        if($key=='caption'){
+                        if ($key == 'caption') {
                             // get first line of text only
                             $itemArray['caption_short'] = preg_replace('/\s+/', ' ', $value);
                         }
@@ -121,7 +126,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
                 }
                 $out->push(ArrayData::create($itemArray));
                 $count++;
-                if( $count >= $limit ) {
+                if ($count >= $limit) {
                     break;
                 }
             }
