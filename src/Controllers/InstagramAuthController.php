@@ -33,7 +33,11 @@ class InstagramAuthController extends Controller
         // retrieve long lived token and store it
         $authObj = $instagram->storeInstagramAuthObject($token);
         if ($authObj) {
-            return ['Content' => DBHTMLText::create()->setValue(_t(self::class . '.TokenCreated', 'received token!'))];
+            // @todo add template for this screen, open in new window and close with button
+            return [
+                'Title'=> _t(__CLASS__ . '.InstagramConnected', 'Instagram connected success'),
+                'Content' => DBHTMLText::create()->setValue(_t(self::class . '.TokenCreated', '<p>Received and store long lived token!</p><p><a href="/admin/settings/#Root_Instagram"></a></p>'))
+            ];
         }
 
         return $this->httpError(403, 'No token received');
