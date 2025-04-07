@@ -33,18 +33,29 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
             'redirectUri' => $redirectUri,
         ];
 
-        // auto set access token if it exists
         $authObj = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
-        if ($authObj) {
-            // check if token needs to be refreshed, refresh after 30 days with TimeDiffIn
-            $days = $authObj->dbObject('LastEdited')->TimeDiffIn('days');
-            if ($days > 30) {
-                $longLivedToken = $this->refreshLongLivedToken();
-                $authObj->LongLivedToken = $longLivedToken->access_token;
-                $authObj->write();
-            }
-            $this->setAccessToken($authObj->LongLivedToken);
+        if(!$authObj) {
+            return false;
         }
+        $this->setAccessToken($authObj->LongLivedToken); // Required before refreshing
+
+        if ($authObj) {
+            // Refresh if older than 30 days
+            $lastEdited = new \DateTime($authObj->LastEdited);
+            $now = new \DateTime();
+            $diffDays = $now->diff($lastEdited)->days;
+
+            if ($diffDays > 30) {
+                $longLivedToken = $this->refreshLongLivedToken();
+                $token = $longLivedToken->access_token;
+
+                $authObj->LongLivedToken = $token;
+                $authObj->write();
+                $this->setAccessToken($token);
+            }
+
+        }
+
         parent::__construct($config);
     }
 
@@ -141,6 +152,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
 
     public function getUserProfile()
     {
+        return [];
         $data = $this->getCachedUserMedia();
         return ArrayData::create($data['Profile'] ?: []);
     }
