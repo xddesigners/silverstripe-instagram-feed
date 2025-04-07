@@ -29,18 +29,28 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
             'redirectUri' => $redirectUri,
         ];
 
-        // auto set access token if it exists
         $authObj = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
+
         if ($authObj) {
-            // check if token needs to be refreshed, refresh after 30 days with TimeDiffIn
-            $days = $authObj->dbObject('LastEdited')->TimeDiffIn('days');
-            if ($days > 30) {
+            $token = $authObj->LongLivedToken;
+
+            // Refresh if older than 30 days
+            $lastEdited = new \DateTime($authObj->LastEdited);
+            $now = new \DateTime();
+            $diffDays = $now->diff($lastEdited)->days;
+
+            if ($diffDays > 30) {
+                $this->setAccessToken($token); // Required before refreshing
                 $longLivedToken = $this->refreshLongLivedToken();
-                $authObj->LongLivedToken = $longLivedToken->access_token;
+                $token = $longLivedToken->access_token;
+
+                $authObj->LongLivedToken = $token;
                 $authObj->write();
             }
-            $this->setAccessToken($authObj->LongLivedToken);
+
+            $this->setAccessToken($token);
         }
+
         parent::__construct($config);
     }
 
