@@ -6,4 +6,4 @@ SilverStripe\SiteConfig\SiteConfig:
     - XD\InstagramFeed\Extensions\SiteConfigExtension
 SilverStripe\Control\Director:
   rules:
-    '__instaauth/': 'XD\InstagramFeed\Controllers\InstagramAuthController'
+    '__instaauth//$Action/$ID/$OtherID': 'XD\InstagramFeed\Controllers\InstagramAuthController'

@@ -7,6 +7,7 @@ use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\SiteConfig\SiteConfig;
 use XD\InstagramFeed\Clients\InstagramClient;
@@ -40,6 +41,23 @@ class SiteConfigExtension extends Extension
             TextField::create('InstagramAppSecret', _t(__CLASS__ . '.InstagramAppSecret', 'Instagram App Secret')),
             TextField::create('InstagramVerificationToken', _t(__CLASS__ . '.InstagramVerificationToken', 'Instagram Verification Token'))->setDisabled(true),
         ]);
+
+        // add button to generate verification token
+        $client = new InstagramClient();
+        $tokenUrl = $client->getLoginUrl();
+
+        $buttonField = LiteralField::create('InstagramAuthButton',
+            '<a href="' . $tokenUrl . '" class="btn btn-primary font-icon-external-link mb-4" target="_blank">' . _t(__CLASS__ . '.InstagramAuthButton', 'Authenticate with Instagram') . '</a>');
+        $fields->addFieldToTab($tab, $buttonField);
+
+
+        $refreshUrl = '/__instaauth/refresh';
+
+        $refreshButton = LiteralField::create('LoadInstagramItemsButton',
+            '<a href="' . $refreshUrl . '" class="btn btn-secondary font-icon-sync"  style="margin-bottom: 20px;" target="_blank">' . _t(__CLASS__ . '.RefreshInstagramFeed', 'Refresh Instagram Feed') . '</a>'
+        );
+        $fields->addFieldToTab($tab, $refreshButton);
+
 
         $config = GridFieldConfig_RecordEditor::create();
         $gridField = GridField::create('InstagramAuthObjects',
