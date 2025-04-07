@@ -21,6 +21,10 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
     {
         $siteConfig = SiteConfig::current_site_config();
 
+        if(!$siteConfig->InstagramAppID || !$siteConfig->InstagramAppSecret) {
+            return false;
+        }
+
         $redirectUri = Controller::join_links(Director::absoluteBaseURL(), '__instaauth');
 
         $config = [
