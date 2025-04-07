@@ -34,6 +34,9 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
         ];
 
         $authObj = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
+        if(!$authObj) {
+            return false;
+        }
         $this->setAccessToken($authObj->LongLivedToken); // Required before refreshing
 
         if ($authObj) {
