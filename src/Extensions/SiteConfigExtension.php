@@ -51,6 +51,15 @@ class SiteConfigExtension extends DataExtension
             '<a href="' . $tokenUrl . '" class="btn btn-primary font-icon-external-link mb-4" target="_blank">' . _t(__CLASS__ . '.InstagramAuthButton', 'Authenticate with Instagram') . '</a>');
         $fields->addFieldToTab($tab, $buttonField);
 
+
+        $refreshUrl = '/__instaauth/refresh';
+
+        $refreshButton = LiteralField::create('LoadInstagramItemsButton',
+            '<a href="' . $refreshUrl . '" class="btn btn-secondary font-icon-sync"  style="margin-bottom: 20px;" target="_blank">' . _t(__CLASS__ . '.RefreshInstagramFeed', 'Refresh Instagram Feed') . '</a>'
+        );
+        $fields->addFieldToTab($tab, $refreshButton);
+        
+
         $config = GridFieldConfig_RecordEditor::create();
         $gridField = GridField::create('InstagramAuthObjects',
             _t(self::class . '.InstagramAuthObjects', 'InstagramAuthObjects'),

@@ -30,25 +30,23 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
         ];
 
         $authObj = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
+        $this->setAccessToken($authObj->LongLivedToken); // Required before refreshing
 
         if ($authObj) {
-            $token = $authObj->LongLivedToken;
-
             // Refresh if older than 30 days
             $lastEdited = new \DateTime($authObj->LastEdited);
             $now = new \DateTime();
             $diffDays = $now->diff($lastEdited)->days;
 
             if ($diffDays > 30) {
-                $this->setAccessToken($token); // Required before refreshing
                 $longLivedToken = $this->refreshLongLivedToken();
                 $token = $longLivedToken->access_token;
 
                 $authObj->LongLivedToken = $token;
                 $authObj->write();
+                $this->setAccessToken($token);
             }
 
-            $this->setAccessToken($token);
         }
 
         parent::__construct($config);
