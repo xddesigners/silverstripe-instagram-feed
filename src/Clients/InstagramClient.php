@@ -21,7 +21,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
     {
         $siteConfig = SiteConfig::current_site_config();
 
-        if(!$siteConfig->InstagramAppID || !$siteConfig->InstagramAppSecret) {
+        if (!$siteConfig->InstagramAppID || !$siteConfig->InstagramAppSecret) {
             return false;
         }
 
@@ -34,7 +34,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
         ];
 
         $authObj = InstagramAuthObject::get()->sort('Created', 'DESC')->first();
-        if(!$authObj) {
+        if (!$authObj) {
             return false;
         }
         $this->setAccessToken($authObj->LongLivedToken); // Required before refreshing
@@ -46,7 +46,15 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
             $diffDays = $now->diff($lastEdited)->days;
 
             if ($diffDays > 30) {
-                $longLivedToken = $this->refreshLongLivedToken();
+                try {
+                    $longLivedToken = $this->refreshLongLivedToken();
+                } catch (\EspressoDev\Instagram\InstagramException $e) {
+                    // log error
+                    SS_Log::log('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $e->getMessage(), SS_Log::ERR);
+                    return;
+                }
+
+                // store token
                 $token = $longLivedToken->access_token;
 
                 $authObj->LongLivedToken = $token;
@@ -98,6 +106,33 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
         }
 
         $media = $this->getUserMedia($userId, $limit, $pagination) ?: [];
+
+        if (isset($media->error) && isset($media->error->message)) {
+            // if cli is running mail error to admin
+
+            // get admin_email from config of email classs
+            $to = Config::inst()->get(Email::class, 'admin_email');
+
+            if (Director::is_cli()) {
+                // send to client
+                $mail = Email::create()
+                    ->setSubject(_t(__CLASS__ . '.InstagramAPIError', 'Instagram API Error'))
+                    ->setBody(
+                        'Website Instagram API Error: ' . $media->error->message
+                    )->setTo($to);
+                $mail->send();
+
+                // log error
+                SS_Log::log('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $media->error->message, SS_Log::ERR);
+
+                return;
+            }
+
+            // do not update but return successfull cached media
+            return ['Error' => $media->error->message, 'LastUpdated' => $cachedMedia->LastEdited, 'Media' => json_decode($cachedMedia->Media ?: ''), 'Profile' => json_decode($cachedMedia->Profile ?: '')];
+        }
+
+
         $profile = $this->getUserProfile() ?: [];
 
         $cachedMedia->Media = json_encode($media, true);
