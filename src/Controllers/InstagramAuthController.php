@@ -13,7 +13,7 @@ class InstagramAuthController extends Controller
 {
 
     private static $allowed_actions = [
-        'refresh'
+        'refresh',
     ];
 
     public function index(HTTPRequest $request)
@@ -45,8 +45,8 @@ class InstagramAuthController extends Controller
         if ($authObj) {
             // @todo add template for this screen, open in new window and close with button
             return [
-                'Title'=> _t(__CLASS__ . '.InstagramConnected', 'Instagram connected success'),
-                'Content' => DBHTMLText::create()->setValue(_t(self::class . '.TokenCreated', '<p>Received and store long lived token!</p><p><a href="/admin/settings/#Root_Instagram">Instagram admin</a></p>'))
+                'Title' => _t(__CLASS__ . '.InstagramConnected', 'Instagram connected success'),
+                'Content' => DBHTMLText::create()->setValue(_t(self::class . '.TokenCreated', '<p>Received and store long lived token!</p><p><a href="/admin/settings/#Root_Instagram">Instagram admin</a></p>')),
             ];
         }
 
@@ -61,11 +61,18 @@ class InstagramAuthController extends Controller
         }
 
         $client = new InstagramClient();
-        $client->updateCachedUserMedia();
+        $result = $client->updateCachedUserMedia();
+
+        if (isset($result['Error'])) {
+            return [
+                'Title' => _t(__CLASS__ . '.FeedUpdated', 'Instagram update failure'),
+                'Content' => DBHTMLText::create()->setValue('<p>' . $result['Error'] . '</p><p><a href="/admin/settings/#Root_Instagram">Instagram admin</a></p>')
+            ];
+        }
 
         return [
-            'Title'=> _t(__CLASS__ . '.FeedUpdated', 'Instagram updated success'),
-            'Content' => DBHTMLText::create()->setValue(_t(self::class . '.FeedUpdatedMessage', '<p>Instagram feed updated successfully!</p><p><a href="/admin/settings/#Root_Instagram">Instagram admin</a></p>'))
+            'Title' => _t(__CLASS__ . '.FeedUpdated', 'Instagram updated success'),
+            'Content' => DBHTMLText::create()->setValue(_t(self::class . '.FeedUpdatedMessage', '<p>Instagram feed updated successfully!</p><p><a href="/admin/settings/#Root_Instagram">Instagram admin</a></p>')),
         ];
 
 
