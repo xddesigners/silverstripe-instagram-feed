@@ -7,6 +7,7 @@ use SilverStripe\Core\Injector\Injector;
 use EspressoDev\Instagram\Instagram;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\ArrayData;
@@ -125,7 +126,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
                 $mail->send();
 
                 // log error
-                Injector::inst()->get(LoggerInterface::class)->error('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $media->error->message, SS_Log::ERR);
+                Injector::inst()->get(LoggerInterface::class)->error('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $media->error->message);
 
                 return;
             }
