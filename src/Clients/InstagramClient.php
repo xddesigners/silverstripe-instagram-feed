@@ -53,7 +53,8 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
                     SS_Log::log('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $e->getMessage(), SS_Log::ERR);
                     return;
                 }
-                
+
+                // store token
                 $token = $longLivedToken->access_token;
 
                 $authObj->LongLivedToken = $token;
