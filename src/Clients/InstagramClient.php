@@ -2,6 +2,8 @@
 
 namespace XD\InstagramFeed\Clients;
 
+use Psr\Log\LoggerInterface;
+use SilverStripe\Core\Injector\Injector;
 use EspressoDev\Instagram\Instagram;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
@@ -50,7 +52,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
                     $longLivedToken = $this->refreshLongLivedToken();
                 } catch (\EspressoDev\Instagram\InstagramException $e) {
                     // log error
-                    SS_Log::log('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $e->getMessage(), SS_Log::ERR);
+                    Injector::inst()->get(LoggerInterface::class)->error('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $e->getMessage());
                     return;
                 }
 
