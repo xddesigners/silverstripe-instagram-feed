@@ -46,7 +46,14 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
             $diffDays = $now->diff($lastEdited)->days;
 
             if ($diffDays > 30) {
-                $longLivedToken = $this->refreshLongLivedToken();
+                try {
+                    $longLivedToken = $this->refreshLongLivedToken();
+                } catch (\EspressoDev\Instagram\InstagramException $e) {
+                    // log error
+                    SS_Log::log('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $e->getMessage(), SS_Log::ERR);
+                    return;
+                }
+                
                 $token = $longLivedToken->access_token;
 
                 $authObj->LongLivedToken = $token;
