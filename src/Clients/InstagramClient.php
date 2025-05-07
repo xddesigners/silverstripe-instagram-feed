@@ -125,7 +125,7 @@ class InstagramClient extends Instagram implements TemplateGlobalProvider
                 $mail->send();
 
                 // log error
-                SS_Log::log('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $media->error->message, SS_Log::ERR);
+                Injector::inst()->get(LoggerInterface::class)->error('Instagram API Error: ' . Director::absoluteBaseURL() . ' - ' . $media->error->message, SS_Log::ERR);
 
                 return;
             }
