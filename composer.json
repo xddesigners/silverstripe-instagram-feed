@@ -9,7 +9,7 @@
   ],
   "homepage": "https://github.com/xddesigners/silverstripe-instagram-feed",
   "require": {
-    "silverstripe/framework": "^5.0 || ^6.0",
+    "silverstripe/framework": "^5.0",
     "espresso-dev/instagram-php": "^1"
   },
   "autoload": {
