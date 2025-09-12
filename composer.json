@@ -1,20 +1,26 @@
 {
-  "name": "xddesigners/silverstripe-instagram-feed",
-  "description": "Instagram Feed for Silverstripe with Basic Display API",
-  "type": "silverstripe-vendormodule",
-  "license": "BSD-3-Clause",
-  "keywords": [
-    "silverstripe",
-    "instagram"
-  ],
-  "homepage": "https://github.com/xddesigners/silverstripe-instagram-feed",
-  "require": {
-    "silverstripe/framework": "^6.0",
-    "espresso-dev/instagram-php": "^1"
-  },
-  "autoload": {
-    "psr-4": {
-      "XD\\InstagramFeed\\": "src/"
+    "name": "xddesigners/silverstripe-instagram-feed",
+    "description": "Instagram Feed for Silverstripe with Basic Display API",
+    "type": "silverstripe-vendormodule",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "silverstripe",
+        "instagram"
+    ],
+    "authors": [
+        {
+            "name": "Remy Vaartjes",
+            "email": "remy@xd.nl"
+        }
+    ],
+    "homepage": "https://github.com/xddesigners/silverstripe-instagram-feed",
+    "require": {
+        "silverstripe/framework": "^6.0",
+        "espresso-dev/instagram-php": "^1"
+    },
+    "autoload": {
+        "psr-4": {
+            "XD\\InstagramFeed\\": "src/"
+        }
     }
-  }
 }
